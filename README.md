@@ -1,4 +1,4 @@
-# Saloon - Plentymarkets 2 Connector
+# Saloon - Plentymarkets Connector
 
 [Saloon](https://docs.saloon.dev/) - Plentymarkets Connector with token handling, allowing you to easily start building your own requests.
 
