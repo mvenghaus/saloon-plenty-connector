@@ -17,9 +17,9 @@ composer require mvenghaus/saloon-plenty-connector
 ```php
 
 $configuration = new Configuration(...);
-$connector = new Connector($configuration);
+$apiConnector = new ApiConnector($configuration);
 
-$response = $connector->send(new Your_Request());
+$response = $apiConnector->send(new Your_Request());
 ```
 
 ### Configuration - Structure
