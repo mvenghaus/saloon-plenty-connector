@@ -7,38 +7,25 @@ namespace Mvenghaus\SaloonPlentyConnector;
 use Closure;
 use Mvenghaus\SaloonPlentyConnector\Requests\GetAccessTokenRequest;
 use Saloon\Helpers\OAuth2\OAuthConfig;
-use Saloon\Http\Auth\AccessTokenAuthenticator;
 use Saloon\Http\Auth\TokenAuthenticator;
+use Saloon\Http\Connector;
 use Saloon\Http\Request;
 use Saloon\Http\Response;
 use Saloon\Traits\OAuth2\ClientCredentialsGrant;
 use Saloon\Traits\Plugins\AcceptsJson;
 use Saloon\Traits\Plugins\AlwaysThrowOnErrors;
 
-class Connector extends \Saloon\Http\Connector
+class AuthConnector extends Connector
 {
-    use AlwaysThrowOnErrors;
     use AcceptsJson;
+    use AlwaysThrowOnErrors;
     use ClientCredentialsGrant;
 
     public function __construct(
         public Configuration $configuration,
     ) {
-        if ($this->configuration->debugCallback instanceof Closure) {
+        if ($this->configuration?->debugCallback instanceof Closure) {
             $this->debugRequest($this->configuration->debugCallback);
-        }
-
-        if (empty($this->configuration->authenticator)) {
-            $this->updateAccessToken();
-            return;
-        }
-
-        $authenticator = AccessTokenAuthenticator::unserialize($this->configuration->authenticator);
-
-        $this->authenticate(new TokenAuthenticator($authenticator->getAccessToken()));
-
-        if ($authenticator->hasExpired()) {
-            $this->updateAccessToken();
         }
     }
 
@@ -52,6 +39,8 @@ class Connector extends \Saloon\Http\Connector
         $authenticator = $this->getAccessToken();
 
         $this->authenticate(new TokenAuthenticator($authenticator->getAccessToken()));
+
+        $this->configuration->authenticator = $authenticator->serialize();
 
         if ($this->configuration->authenticatorUpdateCallback instanceof Closure) {
             ($this->configuration->authenticatorUpdateCallback)($authenticator->serialize());
@@ -78,6 +67,4 @@ class Connector extends \Saloon\Http\Connector
     ): Request {
         return new GetAccessTokenRequest($oauthConfig);
     }
-
-
 }
