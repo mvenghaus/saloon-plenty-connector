@@ -6,8 +6,8 @@ namespace Mvenghaus\SaloonPlentyConnector;
 
 use Closure;
 use Mvenghaus\SaloonPlentyConnector\Requests\GetAccessTokenRequest;
+use Saloon\Contracts\OAuthAuthenticator;
 use Saloon\Helpers\OAuth2\OAuthConfig;
-use Saloon\Http\Auth\TokenAuthenticator;
 use Saloon\Http\Connector;
 use Saloon\Http\Request;
 use Saloon\Http\Response;
@@ -34,17 +34,15 @@ class AuthConnector extends Connector
         return $response->status() !== 200;
     }
 
-    public function updateAccessToken(): void
+    public function updateAccessToken(): OAuthAuthenticator
     {
         $authenticator = $this->getAccessToken();
-
-        $this->authenticate(new TokenAuthenticator($authenticator->getAccessToken()));
-
-        $this->configuration->authenticator = $authenticator->serialize();
 
         if ($this->configuration->authenticatorUpdateCallback instanceof Closure) {
             ($this->configuration->authenticatorUpdateCallback)($authenticator->serialize());
         }
+
+        return $authenticator;
     }
 
     public function resolveBaseUrl(): string
