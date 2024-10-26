@@ -64,6 +64,7 @@ class ApiConnector extends Connector
     /**
      * @throws FatalRequestException
      * @throws RequestException
+     * @throws UnauthorizedException
      */
     public function send(Request $request, ?MockClient $mockClient = null, ?callable $handleRetry = null): Response
     {
