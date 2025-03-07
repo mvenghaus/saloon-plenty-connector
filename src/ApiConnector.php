@@ -71,7 +71,7 @@ class ApiConnector extends Connector
      */
     public function send(Request $request, ?MockClient $mockClient = null, ?callable $handleRetry = null): Response
     {
-        if ($this->getMockClient() !== null) {
+        if ($this->getMockClient() !== null || MockClient::getGlobal() !== null) {
             return parent::send($request, $mockClient, $handleRetry);
         }
 
